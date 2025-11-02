@@ -68,9 +68,25 @@ export default function PreferencesStep({ preferences, onUpdate, onNext, onBack 
               <Label htmlFor="wasiyyah-slider" className="text-base">
                 Wasiyyah (non-heir bequest)
               </Label>
-              <span className="text-2xl font-semibold text-primary">
-                {preferences.wasiyyahPercent.toFixed(1)}%
-              </span>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  value={preferences.wasiyyahPercent.toFixed(1)}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value) || 0;
+                    const clamped = Math.max(0, Math.min(50, value));
+                    if (clamped > 33.33 && !confirmHighWasiyyah) {
+                      setShowWasiyyahWarning(true);
+                    }
+                    onUpdate({ ...preferences, wasiyyahPercent: clamped });
+                  }}
+                  className="w-20 text-right"
+                  min="0"
+                  max="50"
+                  step="0.1"
+                />
+                <span className="text-xl font-semibold text-primary">%</span>
+              </div>
             </div>
             <Slider
               id="wasiyyah-slider"
@@ -98,16 +114,61 @@ export default function PreferencesStep({ preferences, onUpdate, onNext, onBack 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="charity">Charity percentage or amount (optional)</Label>
-            <Input
-              id="charity"
-              type="number"
-              value={preferences.charityPercent || ''}
-              onChange={(e) => onUpdate({ ...preferences, charityPercent: parseFloat(e.target.value) || 0 })}
-              placeholder="0"
-              min="0"
-              max="100"
-            />
+            <Label htmlFor="charity">Charity (optional)</Label>
+            <div className="space-y-3">
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="charity-type"
+                    checked={preferences.charityPercent !== undefined && preferences.charityPercent >= 0}
+                    onChange={() => onUpdate({ ...preferences, charityPercent: 0, charityAmount: undefined })}
+                    className="w-4 h-4 text-primary"
+                  />
+                  <span className="text-sm">Percentage</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="charity-type"
+                    checked={preferences.charityAmount !== undefined}
+                    onChange={() => onUpdate({ ...preferences, charityAmount: 0, charityPercent: undefined })}
+                    className="w-4 h-4 text-primary"
+                  />
+                  <span className="text-sm">Amount</span>
+                </label>
+              </div>
+              
+              {preferences.charityPercent !== undefined ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="charity"
+                    type="number"
+                    value={preferences.charityPercent || ''}
+                    onChange={(e) => onUpdate({ ...preferences, charityPercent: parseFloat(e.target.value) || 0 })}
+                    placeholder="0"
+                    min="0"
+                    max="100"
+                    className="flex-1"
+                  />
+                  <span className="text-muted-foreground">%</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground">$</span>
+                  <Input
+                    id="charity-amount"
+                    type="number"
+                    value={preferences.charityAmount || ''}
+                    onChange={(e) => onUpdate({ ...preferences, charityAmount: parseFloat(e.target.value) || 0 })}
+                    placeholder="0"
+                    min="0"
+                    max="999999"
+                    className="flex-1"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">

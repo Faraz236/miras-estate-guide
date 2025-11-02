@@ -1,5 +1,6 @@
 import { Scale } from 'lucide-react';
 import { Button } from './ui/button';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   onWipeData?: () => void;
@@ -9,26 +10,29 @@ export function Header({ onWipeData }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <Scale className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-semibold text-foreground">Miras</h1>
-        </div>
+        <Link to="/" className="flex items-center gap-2 group">
+          <Scale className="h-7 w-7 text-primary transition-transform group-hover:scale-110" />
+          <h1 className="font-display text-3xl font-bold text-foreground">Miras</h1>
+        </Link>
         <nav className="hidden md:flex items-center gap-6">
-          <a href="#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link to="/#about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
             About
-          </a>
-          <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          </Link>
+          <Link to="/#how-it-works" className="text-sm text-muted-foreground hover:text-primary transition-colors">
             How it works
-          </a>
-          <a href="#resources" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          </Link>
+          <Link to="/resources" className="text-sm text-muted-foreground hover:text-primary transition-colors">
             Resources
-          </a>
+          </Link>
+          <Link to="/faqs" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            FAQs
+          </Link>
           {onWipeData && (
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={onWipeData}
-              className="text-destructive hover:text-destructive"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               End Session
             </Button>

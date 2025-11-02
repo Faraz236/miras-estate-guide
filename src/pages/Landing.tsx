@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Scale, Shield, FileText, Users, Download, CheckCircle } from 'lucide-react';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 interface LandingProps {
   onGetStarted: () => void;
@@ -10,7 +11,7 @@ interface LandingProps {
 
 export default function Landing({ onGetStarted, onUseDemoData }: LandingProps) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
       <main>
@@ -19,7 +20,7 @@ export default function Landing({ onGetStarted, onUseDemoData }: LandingProps) {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground leading-tight">
-                Plan your Islamic-aware will in 10 minutes — Illinois prototype
+                Plan your Islamic-aware will in 10 minutes
               </h1>
               <p className="text-lg text-muted-foreground">
                 Calculate Sharia shares, detect legal conflicts, and get a prioritized Action Packet for your lawyer and scholar. Free and educational.
@@ -117,12 +118,7 @@ export default function Landing({ onGetStarted, onUseDemoData }: LandingProps) {
         </section>
       </main>
 
-      <footer className="border-t py-8">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>No PII stored for hackathon demo. See full disclaimer.</p>
-          <p className="mt-2">© {new Date().getFullYear()} Miras. Educational purposes only.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

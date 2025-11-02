@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import FlowPage from "./pages/FlowPage";
 import NotFound from "./pages/NotFound";
+import Resources from "./pages/Resources";
+import FAQs from "./pages/FAQs";
+import Disclaimer from "./pages/Disclaimer";
 import { useState, useEffect } from "react";
 import { loadSession, createInitialSession, loadDemoData, saveSession } from "./lib/sessionStorage";
 import { SessionData } from "./types/miras";
@@ -55,7 +58,9 @@ const App = () => {
                 )
               } 
             />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/faqs" element={<FAQs />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

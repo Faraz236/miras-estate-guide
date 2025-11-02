@@ -32,18 +32,18 @@ export async function generateActionPacketPDF(data: SessionData) {
     yPos += 3;
   };
 
-  // Page 1: Cover
+  // Page 1: Cover with logo
   pdf.setFillColor(15, 122, 117);
-  pdf.rect(0, 0, pageWidth, 60, 'F');
+  pdf.rect(0, 0, pageWidth, 70, 'F');
   
   pdf.setTextColor(255, 255, 255);
-  pdf.setFontSize(34);
+  pdf.setFontSize(38);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Miras', margin, 30);
+  pdf.text('⚖️ Miras', margin, 35);
   
-  pdf.setFontSize(18);
+  pdf.setFontSize(20);
   pdf.setFont('helvetica', 'normal');
-  pdf.text('Action Packet', margin, 42);
+  pdf.text('Action Packet', margin, 50);
   
   pdf.setTextColor(11, 21, 32);
   yPos = 75;
@@ -245,10 +245,15 @@ export async function generateActionPacketPDF(data: SessionData) {
   const pageCount = pdf.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     pdf.setPage(i);
-    pdf.setFontSize(8);
+    pdf.setFontSize(7);
     pdf.setTextColor(150, 150, 150);
-    pdf.text('Miras — Educational only. For legal questions, consult an Illinois-licensed estate attorney.', margin, pageHeight - 10);
-    pdf.text(`Page ${i} of ${pageCount}`, pageWidth - margin - 20, pageHeight - 10);
+    pdf.text('────────────────────────────────────────────────────────────────────────────────', margin, pageHeight - 18);
+    pdf.setFontSize(8);
+    pdf.text('Miras ⚖️ | www.miras.com | support@miras.com', margin, pageHeight - 12);
+    pdf.setFontSize(7);
+    pdf.text('Created by Ahmed Faraz & Yazaan Shaikh', margin, pageHeight - 7);
+    pdf.setFontSize(8);
+    pdf.text(`Page ${i} of ${pageCount}`, pageWidth - margin - 20, pageHeight - 12);
   }
 
   // Save the PDF

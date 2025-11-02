@@ -42,6 +42,7 @@ export interface Beneficiary {
 export interface Preferences {
   wasiyyahPercent: number;
   charityPercent: number;
+  charityAmount?: number;
   executor: string;
   guardian: string;
   fiqhMode: 'sunni' | 'shia';
