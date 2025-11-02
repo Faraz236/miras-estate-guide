@@ -1,265 +1,274 @@
-// File: src/lib/pdfGenerator.ts
-import jsPDF from "jspdf";
-import { SessionData } from "@/types/miras";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
 
-export async function generateActionPacketPDF(data: SessionData) {
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 20;
-  const contentWidth = pageWidth - 2 * margin;
-  let yPos = margin;
+// ✅ Register Times New Roman
+Font.register({
+  family: "Times-Roman",
+  src: "https://fonts.cdnfonts.com/s/16055/Times%20New%20Roman.woff",
+});
 
-  // ---------- UTILITIES ----------
-  const addPageIfNeeded = (h: number) => {
-    if (yPos + h > pageHeight - margin - 20) {
-      pdf.addPage();
-      drawPageBorder();
-      yPos = margin;
-    }
-  };
+// ✅ Styles
+const styles = StyleSheet.create({
+  page: {
+    fontFamily: "Times-Roman",
+    fontSize: 12,
+    padding: 40,
+    position: "relative",
+  },
+  tealBorder: {
+    position: "absolute",
+    top: 15,
+    left: 15,
+    right: 15,
+    bottom: 15,
+    borderColor: "#008080",
+    borderWidth: 2,
+  },
+  title: {
+    fontSize: 22,
+    textAlign: "center",
+    marginBottom: 20,
+    textDecoration: "underline",
+  },
+  section: {
+    marginBottom: 15,
+  },
+  table: {
+    display: "table",
+    width: "auto",
+    margin: "0 auto",
+    borderWidth: 0.5,
+    borderColor: "#000",
+    borderStyle: "solid",
+  },
+  tableRow: {
+    flexDirection: "row",
+  },
+  tableColHeader: {
+    width: "33%",
+    borderStyle: "solid",
+    borderColor: "#000",
+    borderWidth: 0.5,
+    backgroundColor: "#E8E8E8",
+    padding: 5,
+  },
+  tableCol: {
+    width: "33%",
+    borderStyle: "solid",
+    borderColor: "#000",
+    borderWidth: 0.5,
+    padding: 5,
+  },
+  tableCellHeader: {
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  tableCell: {
+    textAlign: "center",
+  },
+  footer: {
+    position: "absolute",
+    bottom: 30,
+    left: 0,
+    right: 0,
+    textAlign: "center",
+    fontSize: 10,
+  },
+  disclaimerBox: {
+    borderColor: "red",
+    borderWidth: 1,
+    padding: 10,
+    marginTop: 30,
+    marginBottom: 10,
+  },
+  checklistItem: {
+    marginBottom: 8,
+    textAlign: "justify",
+  },
+});
 
-  const addText = (
-    t: string,
-    size = 12,
-    bold = false,
-    color: [number, number, number] = [0, 0, 0],
-    align: "left" | "center" = "left"
-  ) => {
-    pdf.setFont("times", bold ? "bold" : "normal");
-    pdf.setFontSize(size);
-    pdf.setTextColor(...color);
-    pdf.text(t, pageWidth / 2, yPos, { align });
-    yPos += size * 0.5 + 4;
-  };
+// ✅ PDF Document
+const MirasPDF = () => (
+  <Document>
+    {/* --- PAGE 1: COVER --- */}
+    <Page style={styles.page}>
+      <View style={styles.tealBorder} />
+      <Text style={{ fontSize: 26, textAlign: "center", marginTop: 200 }}>
+        Miras – Illinois Islamic Estate Summary
+      </Text>
 
-  const underline = (txt: string) => {
-    const width = pdf.getTextWidth(txt);
-    const y = yPos - 3;
-    pdf.setDrawColor(0);
-    pdf.setLineWidth(0.5);
-    pdf.line((pageWidth - width) / 2, y, (pageWidth + width) / 2, y);
-  };
+      <Text style={{ fontSize: 14, textAlign: "center", marginTop: 20 }}>
+        Date: 2nd November 2025{"\n"}
+        State: Illinois{"\n"}
+        For: Ahmad Khan
+      </Text>
 
-  const drawPageBorder = () => {
-    pdf.setDrawColor(15, 122, 117);
-    pdf.setLineWidth(2);
-    pdf.rect(5, 5, pageWidth - 10, pageHeight - 10, "S");
-  };
+      <View style={styles.disclaimerBox}>
+        <Text style={{ textAlign: "center", fontSize: 10 }}>
+          ⚠️ Important Disclaimer: This document is for educational purposes
+          only and does not constitute legal advice. Always consult a qualified
+          attorney or scholar for binding guidance.
+        </Text>
+      </View>
 
-  // ---------- PAGE 1 ----------
-  drawPageBorder();
-  pdf.setFont("times", "bold");
-  pdf.setFontSize(38);
-  pdf.setTextColor(15, 122, 117);
-  pdf.text("Miras", pageWidth / 2, pageHeight / 2 - 30, { align: "center" });
+      <Text style={styles.footer}>
+        © 2025 Miras Estate | Educational Draft Summary
+      </Text>
+    </Page>
 
-  pdf.setFontSize(20);
-  pdf.setFont("times", "normal");
-  pdf.text("Action Packet", pageWidth / 2, pageHeight / 2, { align: "center" });
+    {/* --- PAGE 2: ASSETS, WASSIYAH, SHARIA --- */}
+    <Page style={styles.page}>
+      <View style={styles.tealBorder} />
 
-  pdf.setFontSize(14);
-  pdf.setTextColor(11, 21, 32);
-  pdf.text("Date: 2nd November 2025", pageWidth / 2, pageHeight / 2 + 20, {
-    align: "center",
-  });
-  pdf.text("State: Illinois", pageWidth / 2, pageHeight / 2 + 30, {
-    align: "center",
-  });
-  pdf.text("For: Ahmad Khan", pageWidth / 2, pageHeight / 2 + 40, {
-    align: "center",
-  });
+      {/* Asset Summary */}
+      <Text style={styles.title}>Asset Summary</Text>
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <View style={styles.tableColHeader}>
+            <Text style={styles.tableCellHeader}>Name</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text style={styles.tableCellHeader}>Type</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text style={styles.tableCellHeader}>Value</Text>
+          </View>
+        </View>
+        <View style={styles.tableRow}>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>Primary Home</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>Real Estate</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>$450,000</Text>
+          </View>
+        </View>
+      </View>
 
-  // Disclaimer box
-  const boxH = 25;
-  pdf.setDrawColor(217, 83, 79);
-  pdf.setFillColor(255, 245, 245);
-  pdf.rect(margin, pageHeight - margin - boxH, contentWidth, boxH, "F");
-  pdf.rect(margin, pageHeight - margin - boxH, contentWidth, boxH, "S");
-  pdf.setFont("times", "bold");
-  pdf.setFontSize(10);
-  pdf.setTextColor(217, 83, 79);
-  pdf.text("IMPORTANT DISCLAIMER", margin + 5, pageHeight - margin - boxH + 7);
-  pdf.setFont("times", "normal");
-  pdf.setTextColor(0, 0, 0);
-  pdf.text(
-    "This packet is educational and not legal advice. Consult an Illinois-licensed estate attorney and a qualified Islamic scholar before implementing any plan.",
-    margin + 5,
-    pageHeight - margin - boxH + 15,
-    { maxWidth: contentWidth - 10 }
-  );
+      {/* Wassiyah & Charity Allocation */}
+      <Text style={styles.title}>Wassiyah & Charity Allocation</Text>
+      <Text style={{ textAlign: "center" }}>
+        10% of total estate allocated to charity and non-heirs.
+      </Text>
 
-  // ---------- PAGE 2 ----------
-  pdf.addPage();
-  drawPageBorder();
-  yPos = margin + 8;
+      {/* Sharia Distribution */}
+      <Text style={styles.title}>Sharia Distribution</Text>
+      <View style={styles.table}>
+        <View style={styles.tableRow}>
+          <View style={styles.tableColHeader}>
+            <Text style={styles.tableCellHeader}>Relation</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text style={styles.tableCellHeader}>Share (%)</Text>
+          </View>
+          <View style={styles.tableColHeader}>
+            <Text style={styles.tableCellHeader}>Amount ($)</Text>
+          </View>
+        </View>
+        <View style={styles.tableRow}>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>Spouse</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>12.5%</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>$56,250</Text>
+          </View>
+        </View>
+        <View style={styles.tableRow}>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>Son</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>58.3%</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>$262,350</Text>
+          </View>
+        </View>
+        <View style={styles.tableRow}>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>Daughter</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>29.2%</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>$131,400</Text>
+          </View>
+        </View>
+      </View>
 
-  // --- Asset Summary ---
-  addText("Asset Summary", 16, true, [0, 0, 0], "center");
-  underline("Asset Summary");
-  yPos += 3;
+      <Text style={styles.footer}>
+        © 2025 Miras Estate | Page 2 – Illinois Islamic Allocation Summary
+      </Text>
+    </Page>
 
-  const tX = margin + 10;
-  const tW = contentWidth - 20;
-  const colW = [60, 40, 40];
-  pdf.setLineWidth(0.5);
-  pdf.setDrawColor(0);
+    {/* --- PAGE 3: LEGAL CHECKLIST + ACTIONS --- */}
+    <Page style={styles.page}>
+      <View style={styles.tealBorder} />
 
-  // Header
-  pdf.rect(tX, yPos, tW, 10, "S");
-  pdf.setFont("times", "bold");
-  pdf.setFontSize(12);
-  pdf.text("Asset Name", tX + 2, yPos + 7);
-  pdf.text("Value", tX + colW[0] + 2, yPos + 7);
-  pdf.text("Status", tX + colW[0] + colW[1] + 2, yPos + 7);
-  yPos += 10;
+      {/* Illinois Legal Checklist */}
+      <Text style={styles.title}>Illinois Legal Checklist</Text>
+      <View style={{ marginHorizontal: 20 }}>
+        <Text style={styles.checklistItem}>
+          • Two-witness rule: A valid Illinois will requires your signature plus
+          two witnesses who are not beneficiaries.
+        </Text>
+        <Text style={styles.checklistItem}>
+          • Holographic wills: Handwritten wills without proper witnesses are
+          NOT valid in Illinois.
+        </Text>
+        <Text style={styles.checklistItem}>
+          • Surviving spouse statutory share: Illinois law allows a surviving
+          spouse to claim an elective share.
+        </Text>
+        <Text style={styles.checklistItem}>
+          • Signature formalities: The will must be signed by you and two
+          witnesses in your presence.
+        </Text>
+        <Text style={styles.checklistItem}>
+          • Non-probate assets: Assets with beneficiary designations or held in
+          joint tenancy pass outside your will.
+        </Text>
+      </View>
 
-  // Rows
-  pdf.setFont("times", "normal");
-  data.assets.forEach((a) => {
-    addPageIfNeeded(10);
-    pdf.rect(tX, yPos, tW, 10, "S");
-    pdf.text(a.name, tX + 2, yPos + 7);
-    pdf.text(`$${a.value.toLocaleString()}`, tX + colW[0] + 2, yPos + 7);
-    const status =
-      a.ownerType !== "sole" || a.beneficiaries.length > 0
-        ? "Non-Probate"
-        : "Probate";
-    pdf.text(status, tX + colW[0] + colW[1] + 2, yPos + 7);
-    yPos += 10;
-  });
+      {/* Prioritized Action Steps */}
+      <Text style={styles.title}>Prioritized Action Steps</Text>
 
-  yPos += 8;
+      <View style={{ marginLeft: 40, marginRight: 30 }}>
+        <Text style={{ marginBottom: 10 }}>
+          1. <Text style={{ fontWeight: "bold" }}>Update non-probate asset beneficiaries</Text>
+          {"\n"}Review and update beneficiary designations on retirement accounts, life
+          insurance, and jointly-owned property.
+          {"\n"}Sample message to HR: "I would like to update the beneficiary designation on
+          my 401(k) account. Please send me the necessary forms."
+        </Text>
 
-  // --- Wassiyah & Charity ---
-  addText("Wassiyah & Charity Allocation", 16, true, [0, 0, 0], "center");
-  underline("Wassiyah & Charity Allocation");
-  yPos += 3;
+        <Text>
+          2. <Text style={{ fontWeight: "bold" }}>Schedule attorney consultation</Text>
+          {"\n"}Discuss the Illinois spousal elective share and how it affects your estate
+          plan.
+          {"\n"}Email template: "I am planning my estate and would like to discuss the
+          Illinois spousal elective share provisions. I have prepared an Action
+          Packet. Can we schedule a one-hour consultation?"
+        </Text>
+      </View>
 
-  if (data.preferences.wasiyyahPercent)
-    addText(
-      `Wassiyah Allocation: ${data.preferences.wasiyyahPercent}%`,
-      12,
-      false,
-      [0, 0, 0],
-      "center"
-    );
-  if (data.preferences.charityAmount)
-    addText(
-      `Charity Amount: $${data.preferences.charityAmount.toLocaleString()}`,
-      12,
-      false,
-      [0, 0, 0],
-      "center"
-    );
-  else if (data.preferences.charityPercent)
-    addText(
-      `Charity Percentage: ${data.preferences.charityPercent}%`,
-      12,
-      false,
-      [0, 0, 0],
-      "center"
-    );
+      <Text style={styles.footer}>
+        © 2025 Miras Estate | Page 3 – Legal Guidance & Action
+      </Text>
+    </Page>
+  </Document>
+);
 
-  yPos += 5;
-
-  // --- Sharia Distribution ---
-  addText("Sharia Distribution", 16, true, [0, 0, 0], "center");
-  underline("Sharia Distribution");
-  yPos += 5;
-
-  const relCols = [50, 40, 30, 30];
-  pdf.setFont("times", "bold");
-  pdf.setFontSize(12);
-  pdf.setLineWidth(0.5);
-  pdf.rect(tX, yPos, tW, 10, "S");
-  pdf.text("Heir", tX + 2, yPos + 7);
-  pdf.text("Relation", tX + relCols[0] + 2, yPos + 7);
-  pdf.text("Fraction", tX + relCols[0] + relCols[1] + 2, yPos + 7);
-  pdf.text("Percentage", tX + relCols[0] + relCols[1] + relCols[2] + 2, yPos + 7);
-  yPos += 10;
-
-  pdf.setFont("times", "normal");
-  data.computed.shariaShares.forEach((s) => {
-    addPageIfNeeded(10);
-    pdf.rect(tX, yPos, tW, 10, "S");
-    pdf.text(s.heirName || "", tX + 2, yPos + 7);
-    pdf.text(s.relation || "", tX + relCols[0] + 2, yPos + 7);
-    pdf.text(s.fraction, tX + relCols[0] + relCols[1] + 2, yPos + 7);
-    pdf.text(`${s.percentage.toFixed(2)}%`, tX + relCols[0] + relCols[1] + relCols[2] + 2, yPos + 7);
-    yPos += 10;
-  });
-
-  // ---------- PAGE 3 ----------
-  pdf.addPage();
-  drawPageBorder();
-  yPos = margin + 8;
-
-  // --- Illinois Legal Checklist ---
-  addText("Illinois Legal Checklist", 16, true, [0, 0, 0], "center");
-  underline("Illinois Legal Checklist");
-  yPos += 5;
-  pdf.setFont("times", "normal");
-  pdf.setFontSize(12);
-
-  const checklist = [
-    "Two-witness rule: A valid Illinois will requires your signature plus two witnesses who are not beneficiaries.",
-    "Holographic wills: Handwritten wills without proper witnesses are NOT valid in Illinois.",
-    "Surviving spouse statutory share: If your spouse survives, Illinois law allows them to claim an elective share of approximately one-third of your estate if descendants exist.",
-    "Signature formalities: The will must be signed by you (or someone at your direction in your presence) and by two witnesses in your presence.",
-    "Non-probate assets: Assets with beneficiary designations or held in joint tenancy pass outside your will and are not subject to its provisions.",
-  ];
-  checklist.forEach((c) => {
-    addPageIfNeeded(7);
-    pdf.text(`• ${c}`, margin + 5, yPos);
-    yPos += 7;
-  });
-
-  yPos += 8;
-
-  // --- Prioritized Action Steps ---
-  addText("Prioritized Action Steps", 16, true, [0, 0, 0], "center");
-  underline("Prioritized Action Steps");
-  yPos += 6;
-
-  pdf.setFont("times", "normal");
-  pdf.setFontSize(12);
-  data.computed.actionItems.forEach((i) => {
-    addPageIfNeeded(20);
-    pdf.setFont("times", "bold");
-    pdf.text(`${i.priority}. ${i.title}`, margin + 5, yPos);
-    yPos += 6;
-
-    pdf.setFont("times", "normal");
-    const desc = pdf.splitTextToSize(i.description, contentWidth - 10);
-    desc.forEach((l) => {
-      pdf.text(l, margin + 10, yPos);
-      yPos += 5;
-    });
-
-    if (i.script) {
-      const script = pdf.splitTextToSize(i.script, contentWidth - 20);
-      script.forEach((l) => {
-        pdf.text(l, margin + 12, yPos);
-        yPos += 5;
-      });
-      yPos += 3;
-    }
-
-    yPos += 5;
-  });
-
-  // ---------- FOOTERS ----------
-  const total = pdf.getNumberOfPages();
-  for (let p = 1; p <= total; p++) {
-    pdf.setPage(p);
-    pdf.setFontSize(8);
-    pdf.setTextColor(150);
-    pdf.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
-    pdf.text("Miras | www.miras.com | support@miras.com", margin, pageHeight - 14);
-    pdf.text("Created by Ahmed Faraz & Yazaan Shaikh", margin, pageHeight - 9);
-    pdf.text(`Page ${p} of ${total}`, pageWidth - margin - 20, pageHeight - 14);
-  }
-
-  pdf.save(`Miras-Action-Packet-${data.date}.pdf`);
-}
+export default MirasPDF;
