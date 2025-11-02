@@ -59,7 +59,7 @@ export default function StateSelector({ selectedState, onStateChange, onNext }: 
           </div>
 
           {selectedState === 'IL' && (
-            <div className="rounded-lg bg-success/10 border border-success/20 p-4">
+            <div className="rounded-lg bg-green-600 p-4 shadow-md">
               <p className="text-sm text-success-foreground">
                 ✓ Illinois selected. You'll receive Illinois-specific legal checklists and requirements.
               </p>
