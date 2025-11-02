@@ -13,18 +13,6 @@ export async function generateActionPacketPDF(data: SessionData) {
   const teal = [15, 122, 117];
   const red = [217, 83, 79];
 
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    const day = d.getDate();
-    const month = d.toLocaleString('default', { month: 'long' });
-    const year = d.getFullYear();
-    let suffix = 'th';
-    if (day === 1 || day === 21 || day === 31) suffix = 'st';
-    else if (day === 2 || day === 22) suffix = 'nd';
-    else if (day === 3 || day === 23) suffix = 'rd';
-    return `${day}${suffix} ${month} ${year}`;
-  };
-
   const addPageBorder = () => {
     pdf.setDrawColor(...teal);
     pdf.setLineWidth(2);
@@ -45,7 +33,7 @@ export async function generateActionPacketPDF(data: SessionData) {
   };
 
   const addPageIfNeeded = (height: number) => {
-    if (yPos + height > pageHeight - margin - 20) {
+    if (yPos + height > pageHeight - margin - 25) {
       pdf.addPage();
       yPos = margin;
       addPageBorder();
@@ -70,19 +58,13 @@ export async function generateActionPacketPDF(data: SessionData) {
   pdf.setFontSize(38);
   pdf.setFont('times', 'bold');
   pdf.text('Miras', pageWidth / 2, 35, { align: 'center' });
-
   pdf.setFontSize(24);
   pdf.setFont('times', 'normal');
   pdf.text('Action Packet', pageWidth / 2, 55, { align: 'center' });
 
-  yPos = 75;
-  addText(`Date: ${formatDate(data.date)}`, 14);
-  addText('State: Illinois', 14);
-  if (data.decedent?.name) addText(`For: ${data.decedent.name}`, 14);
-
   // Disclaimer Box near bottom
   const disclaimerHeight = 40;
-  const disclaimerY = pageHeight - margin - disclaimerHeight;
+  const disclaimerY = pageHeight - margin - disclaimerHeight - 10;
   pdf.setDrawColor(...red);
   pdf.setLineWidth(1);
   pdf.setFillColor(255, 245, 245);
@@ -103,7 +85,7 @@ export async function generateActionPacketPDF(data: SessionData) {
   });
 
   // ---------------------
-  // Page 2: Asset Summary
+  // Page 2: Asset Summary + Wassiyah + Sharia Distribution
   // ---------------------
   pdf.addPage();
   yPos = margin;
@@ -136,15 +118,10 @@ export async function generateActionPacketPDF(data: SessionData) {
   if (data.preferences.charityAmount) addText(`Charity Amount: $${data.preferences.charityAmount.toLocaleString()}`, 12);
   else if (data.preferences.charityPercent) addText(`Charity Percentage: ${data.preferences.charityPercent}%`, 12);
 
-  // ---------------------
-  // Page 3: Sharia Distribution
-  // ---------------------
-  pdf.addPage();
-  yPos = margin;
-  addPageBorder();
-  addText('Sharia Distribution', 20, true);
+  // Sharia Distribution table below
+  yPos += 5;
+  addText('Sharia Distribution', 16, true);
   addText('Calculated using Sunni fiqh rules based on your heirs', 12);
-
   pdf.setFontSize(12);
   pdf.setFont('times', 'bold');
   const shariaX = pageWidth/2 - 90;
@@ -163,7 +140,7 @@ export async function generateActionPacketPDF(data: SessionData) {
   });
 
   // ---------------------
-  // Page 4: Illinois Legal Checklist
+  // Page 3: Legal Checklist + Action Steps
   // ---------------------
   pdf.addPage();
   yPos = margin;
@@ -188,31 +165,15 @@ export async function generateActionPacketPDF(data: SessionData) {
     yPos += pdf.splitTextToSize(item, contentWidth-30).length*6 + 5;
   });
 
-  // ---------------------
-  // Page 5: Prioritized Action Steps
-  // ---------------------
-  pdf.addPage();
-  yPos = margin;
-  addPageBorder();
+  // Prioritized Action Steps
   addText('Prioritized Action Steps', 18, true);
   addText('Top recommendations based on your estate structure', 12);
 
   data.computed.actionItems.forEach((item,i)=>{
     addPageIfNeeded(30);
-    // Number circle
-    pdf.setFillColor(...teal);
-    pdf.circle(pageWidth/2 - 80, yPos-2, 4, 'F');
-    pdf.setTextColor(255,255,255);
     pdf.setFont('times','bold');
-    pdf.text(`${i+1}`, pageWidth/2 - 80, yPos, { align:'center' });
-
-    // Title
-    pdf.setTextColor(0,0,0);
-    pdf.setFont('times','bold');
-    pdf.text(item.title, pageWidth/2, yPos, { align:'center' });
+    pdf.text(`${i+1}. ${item.title}`, pageWidth/2, yPos, { align:'center' });
     yPos += 8;
-
-    // Description
     pdf.setFont('times','normal');
     pdf.setFontSize(11);
     pdf.splitTextToSize(item.description, contentWidth-40).forEach(line=>{
@@ -220,7 +181,6 @@ export async function generateActionPacketPDF(data: SessionData) {
       yPos += 6;
     });
 
-    // Sample script
     if(item.script){
       yPos += 4;
       pdf.setFillColor(245,245,245);
@@ -234,6 +194,7 @@ export async function generateActionPacketPDF(data: SessionData) {
         yPos += 6;
       });
       yPos += 4;
+      pdf.setTextColor(0,0,0);
     }
     yPos += 10;
   });
@@ -247,13 +208,13 @@ export async function generateActionPacketPDF(data: SessionData) {
     pdf.setFontSize(7);
     pdf.setTextColor(150,150,150);
     pdf.setLineWidth(0.5);
-    pdf.line(margin, pageHeight-15,pageWidth-margin,pageHeight-15);
+    pdf.line(margin, pageHeight-18,pageWidth-margin,pageHeight-18);
     pdf.setFontSize(8);
-    pdf.text('Miras | www.miras.com | support@miras.com', margin, pageHeight-10);
+    pdf.text('Miras | www.miras.com | support@miras.com', margin, pageHeight-13);
     pdf.setFontSize(7);
-    pdf.text('Created by Ahmed Faraz & Yazaan Shaikh', margin, pageHeight-5);
-    pdf.text(`Page ${i} of ${pageCount}`, pageWidth-margin-20, pageHeight-10);
+    pdf.text('Created by Ahmed Faraz & Yazaan Shaikh', margin, pageHeight-8);
+    pdf.text(`Page ${i} of ${pageCount}`, pageWidth-margin-20, pageHeight-13);
   }
 
-  pdf.save(`Miras-Action-Packet-${formatDate(data.date)}.pdf`);
+  pdf.save(`Miras-Action-Packet.pdf`);
 }
