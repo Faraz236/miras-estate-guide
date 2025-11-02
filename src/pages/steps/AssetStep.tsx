@@ -11,6 +11,24 @@ import { FileText, Plus, Edit, Trash2, AlertTriangle, Info } from 'lucide-react'
 import { Asset, FamilyMember, Beneficiary } from '@/types/miras';
 import { Badge } from '@/components/ui/badge';
 
+// Mapping for clean display names
+const ownerTypeMap: Record<string, string> = {
+  sole: 'Sole',
+  joint_tenancy: 'Joint Tenancy',
+  tenancy_in_common: 'Tenancy In Common',
+  trust: 'Trust',
+};
+
+const assetTypeMap: Record<string, string> = {
+  real_estate: 'Real Estate',
+  bank_account: 'Bank Account',
+  retirement: 'Retirement (401k/IRA)',
+  life_insurance: 'Life Insurance',
+  personal_property: 'Personal Property',
+  business_interest: 'Business Interest',
+  other: 'Other',
+};
+
 interface AssetStepProps {
   assets: Asset[];
   family: FamilyMember[];
@@ -109,14 +127,14 @@ export default function AssetStep({ assets, family, onUpdate, onNext, onBack }: 
                     return (
                       <tr key={asset.id} className={`border-b ${status === 'non-probate' ? 'bg-destructive/5' : ''}`}>
                         <td className="py-3 px-4 font-medium">{asset.name}</td>
-                        <td className="py-3 px-4 text-sm text-muted-foreground capitalize">
-                          {asset.type.replace('_', ' ')}
+                        <td className="py-3 px-4 text-sm text-muted-foreground">
+                          {assetTypeMap[asset.type]}
                         </td>
                         <td className="py-3 px-4 text-right">
                           ${asset.value.toLocaleString()}
                         </td>
-                        <td className="py-3 px-4 text-sm capitalize">
-                          {asset.ownerType.replace('_', ' ')}
+                        <td className="py-3 px-4 text-sm">
+                          {ownerTypeMap[asset.ownerType]}
                         </td>
                         <td className="py-3 px-4">
                           {status === 'non-probate' ? (
