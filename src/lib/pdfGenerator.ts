@@ -159,23 +159,30 @@ export async function generateActionPacketPDF(data: SessionData) {
   });
 
   // ---------------------
-  // Page 4: Wasiyyah & Charity
-  // ---------------------
-  if (data.wasiyyahPercentage || data.charityAmount || data.charityPercentage) {
-    pdf.addPage();
-    yPos = margin;
-    addText('Wasiyyah & Charity Allocation', 20, true, [197, 164, 114]);
-    yPos += 5;
+// Page 4: Wasiyyah & Charity
+// ---------------------
+if (
+  data.preferences.wasiyyahPercent > 0 ||
+  data.preferences.charityAmount ||
+  data.preferences.charityPercent
+) {
+  pdf.addPage();
+  yPos = margin;
+  addText('Wasiyyah & Charity Allocation', 20, true, [197, 164, 114]);
+  yPos += 5;
 
-    if (data.wasiyyahPercentage) {
-      addText(`Wasiyyah Allocation: ${data.wasiyyahPercentage}%`, 12);
-    }
-    if (data.charityAmount) {
-      addText(`Charity Amount: $${data.charityAmount.toLocaleString()}`, 12);
-    } else if (data.charityPercentage) {
-      addText(`Charity Percentage: ${data.charityPercentage}%`, 12);
-    }
+  // Wasiyyah
+  if (data.preferences.wasiyyahPercent > 0) {
+    addText(`Wasiyyah Allocation: ${data.preferences.wasiyyahPercent}%`, 12);
   }
+
+  // Charity
+  if (data.preferences.charityMode === 'amount' && data.preferences.charityAmount) {
+    addText(`Charity Amount: $${data.preferences.charityAmount.toLocaleString()}`, 12);
+  } else if (data.preferences.charityMode === 'percentage' && data.preferences.charityPercent) {
+    addText(`Charity Percentage: ${data.preferences.charityPercent}%`, 12);
+  }
+}
 
   // ---------------------
   // Page 5: Illinois Legal Checklist
