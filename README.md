@@ -1,4 +1,3 @@
-Estate Planning Assistant
 📘 Project Overview
 
 A web application designed to generate a personalized Islamic estate planning report for Illinois residents. It helps users summarize their assets, distribute them according to Sharia principles, and prepare legal checklists and action steps in a professional downloadable PDF format.
@@ -33,12 +32,6 @@ npm install
 # Run the development server
 npm run dev
 
-Environment Variables
-
-If your project requires API keys or environment configuration, create a .env file in the root directory following the example below:
-
-# .env.example
-VITE_API_KEY=your_api_key_here
 
 📄 Deployment
 
